@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const mySecret = process.env.MONGODB_URI
 
 //bd connection and schemas
-//mongodb+srv://luismartinez:2k74lfZJQ0YxvXQN@cluster0.wssr2.mongodb.net/?retryWrites=true&w=majority
+
 mongoose.connect(mySecret, { useNewUrlParser: true, useUnifiedTopology: true});
 
 //bd schema and model
@@ -20,8 +20,7 @@ const Users= mongoose.model('Users', userSchema);
 const exerciseSchema = mongoose.Schema({
   description:           {type: String, required: true},
   duration:              {type: Number, required: true},
-  date:                  {type: String, required: true},
-  date2:                  {type: Date, required: true},
+  date:                  {type: String},
   userId:   {
     type: mongoose.Schema.Types.ObjectId,
     ref:'Users',
@@ -68,17 +67,21 @@ app.post('/api/users', (req, res)=>{
 
 app.post('/api/users/:id/exercises', (req, res)=>{
   const {id} = req.params;
-  var date = "";
-  if(req.body['date'].length === 0){
-    date = new Date();    
+  console.log(!req.body['date'])
+  var checkDate;
+  if(req.body['date']){
+    
+    checkDate = new Date(req.body['date'])
+    
+    checkDate = checkDate.toDateString();
   }
   else{
-     
-    date = req.body['date'];
+    checkDate = new Date();
+    
+    checkDate = checkDate.toDateString();
   }
-  const {description, duration} =  req.body; 
-  var checkDate2 = new Date(date);
-  var checkDate = new Date(date).toDateString();
+  const {description, duration} =  req.body;
+  console.log(checkDate)
   Users.findById(id, (err, data)=>{
     if(err){
       return res.status(400).send(err.message)
@@ -86,7 +89,6 @@ app.post('/api/users/:id/exercises', (req, res)=>{
     const name = data.username;
     const newExercise = new Exercise({
       date: checkDate,
-      date2: checkDate2,
       duration: duration,
       description: description,
       userId: id
@@ -109,7 +111,7 @@ app.post('/api/users/:id/exercises', (req, res)=>{
 
 app.get('/api/users/:id/logs', async(req, res)=>{
   const {id} = req.params;
-  var from = new Date('2000-00-00');
+  var from;
   var to;
   var limit = 0;
   
