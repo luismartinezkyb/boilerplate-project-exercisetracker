@@ -65,23 +65,32 @@ app.post('/api/users', (req, res)=>{
   
 });
 
+
+
 app.post('/api/users/:id/exercises', (req, res)=>{
   const {id} = req.params;
-  console.log(!req.body['date'])
+  // var checkDate;
+  // if(req.body['date']){
+  //   checkDate = new Date(req.body['date']).toUTCString()
+  // }
+  // else{
+  //   checkDate = new Date().toUTCString();
+  // }
+  // const {description, duration} =  req.body;
+  // console.log(checkDate)
+  // checkDate = checkDate.slice(0, checkDate.length-13);
+  // console.log(checkDate)
   var checkDate;
   if(req.body['date']){
-    
     checkDate = new Date(req.body['date'])
     
     checkDate = checkDate.toDateString();
   }
   else{
     checkDate = new Date();
-    
     checkDate = checkDate.toDateString();
   }
   const {description, duration} =  req.body;
-  console.log(checkDate)
   Users.findById(id, (err, data)=>{
     if(err){
       return res.status(400).send(err.message)
